@@ -22,6 +22,7 @@ const audioToggle = document.getElementById('audio-toggle');
 
 // Data Fields
 const dataIp = document.getElementById('data-ip');
+const dataLocalIp = document.getElementById('data-local-ip');
 const dataLocation = document.getElementById('data-location');
 const dataIsp = document.getElementById('data-isp');
 const dataPlatform = document.getElementById('data-platform');
@@ -31,6 +32,7 @@ const dataHardware = document.getElementById('data-hardware');
 // Real Data Object
 let realUserData = {
     ip: '192.168.1.100 (افتراضي - فشل الاتصال بقاعدة البيانات)',
+    localIp: '192.168.1.10 (جاري الفحص...)',
     location: 'غير محدد (Unknown)',
     isp: 'غير متاح (N/A)',
     platform: '',
@@ -252,10 +254,54 @@ function playSuccessSound() {
     });
 }
 
+// WebRTC Local IP Extractor
+function getLocalIP() {
+    return new Promise((resolve) => {
+        const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+        const RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+        if (!RTCPeerConnection) {
+            resolve('غير مدعوم في المتصفح (WebRTC Disabled)');
+            return;
+        }
+        
+        const pc = new RTCPeerConnection({ iceServers: [] });
+        pc.createDataChannel("");
+        
+        pc.createOffer()
+            .then(offer => pc.setLocalDescription(offer))
+            .catch(() => {});
+            
+        pc.onicecandidate = (ice) => {
+            if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                return;
+            }
+            const candidate = ice.candidate.candidate;
+            const match = ipRegex.exec(candidate);
+            if (match) {
+                const ip = match[1];
+                if (ip.startsWith("192.168.") || ip.startsWith("10.") || ip.startsWith("172.16.") || ip.startsWith("172.17.") || ip.startsWith("172.18.") || ip.startsWith("172.19.") || ip.startsWith("172.2") || ip.startsWith("172.30.") || ip.startsWith("172.31.")) {
+                    resolve(ip);
+                    pc.onicecandidate = () => {};
+                    pc.close();
+                }
+            }
+        };
+        
+        // Timeout after 1.2 seconds (fallback for mDNS random hashes)
+        setTimeout(() => {
+            resolve('مخفي لحماية الخصوصية (mDNS active)');
+            try { pc.close(); } catch(e) {}
+        }, 1200);
+    });
+}
+
 // ----------------------------------------------------
 // 2. Real User Data Extraction
 // ----------------------------------------------------
 async function fetchRealUserData() {
+    // Start WebRTC scanning in parallel
+    const localIpPromise = getLocalIP();
+
     // A. Basic browser properties (Instant)
     const ua = navigator.userAgent;
     
@@ -317,6 +363,9 @@ async function fetchRealUserData() {
             // Keep default mocks if offline completely
         }
     }
+
+    // C. Wait for local IP resolution
+    realUserData.localIp = await localIpPromise;
 }
 
 // ----------------------------------------------------
@@ -478,6 +527,7 @@ function completeScanningPhase() {
     setTimeout(() => {
         // Populate HTML fields with retrieved data
         dataIp.innerText = realUserData.ip;
+        dataLocalIp.innerText = realUserData.localIp;
         dataLocation.innerText = realUserData.location;
         dataIsp.innerText = realUserData.isp;
         dataPlatform.innerText = realUserData.platform;
