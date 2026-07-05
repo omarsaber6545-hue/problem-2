@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠️ ALERT: SYSTEM BREACHED</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for retro coding look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Cairo:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- CRT Overlay Filters -->
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
+
+    <!-- Ambient Hum Toggle Button -->
+    <button id="audio-toggle" class="audio-btn" title="كتم/تشغيل الصوت">🔊</button>
+
+    <!-- Boot / Interaction Screen (Bypasses Browser Autoplay block) -->
+    <div id="boot-screen" class="boot-screen">
+        <div class="boot-container">
+            <div class="glitch-title" data-text="SYSTEM CORRUPTED">SYSTEM CORRUPTED</div>
+            <div class="boot-prompt">
+                <span class="warning-text">⚠️ تحذير: تم الكشف عن نشاط غير مصرح به.</span>
+                <span class="sub-text">انقر في أي مكان لفك تشفير النظام وقراءة البيانات...</span>
+            </div>
+            <div class="boot-btn-container">
+                <button id="start-btn" class="start-btn">
+                    <span>[ تشغيل بروتوكول فك التشفير ]</span>
+                    <span class="btn-sub">DECRYPT_PROTOCOL.SH</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Terminal Container (Hidden initially) -->
+    <div id="terminal-container" class="terminal-container hidden">
+        
+        <!-- Terminal Title Bar -->
+        <div class="terminal-header">
+            <div class="header-buttons">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+            </div>
+            <div class="header-title">root@backdoor:~ - Secure Shell Client</div>
+            <div class="header-status">CONNECTED</div>
+        </div>
+
+        <!-- Terminal Body -->
+        <div class="terminal-body" id="terminal-body">
+            
+            <!-- Phase 1: Typing Text Area -->
+            <div class="typing-section">
+                <h1 id="breach-title" class="breach-title glitch hidden" data-text="⚠️ تم اختراقك">⚠️ تم اختراقك</h1>
+                <p id="apology-text" class="apology-text hidden"></p>
+            </div>
+
+            <!-- Phase 2: Progress & Log Section -->
+            <div id="scan-section" class="scan-section hidden">
+                <div class="loading-container">
+                    <div class="loading-label">جاري سحب بيانات الجهاز... <span id="progress-percentage">0%</span></div>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Scrolling Console Output -->
+                <div class="console-box" id="console-box">
+                    <div class="console-scroll" id="console-scroll">
+                        <!-- Terminal log rows injected dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3: Retrieved Real Data Panel -->
+            <div id="data-section" class="data-section hidden">
+                <div class="data-header">
+                    <span class="blink">●</span> تقرير بيانات الاختراق الكامل (REAL-TIME TARGET DATA)
+                </div>
+                <div class="data-grid">
+                    
+                    <div class="data-card">
+                        <div class="card-label">عنوان الـ IP العام (Public IP)</div>
+                        <div class="card-value green-glow" id="data-ip">جاري التحميل...</div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="card-label">الموقع الجغرافي (Location)</div>
+                        <div class="card-value" id="data-location">جاري التحميل...</div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="card-label">مزود خدمة الإنترنت (ISP)</div>
+                        <div class="card-value" id="data-isp">جاري التحميل...</div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="card-label">نظام التشغيل والمتصفح (Platform)</div>
+                        <div class="card-value text-small" id="data-platform">جاري التحميل...</div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="card-label">نوع الشبكة وسرعتها (Connection)</div>
+                        <div class="card-value" id="data-connection">جاري التحميل...</div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="card-label">مواصفات المعالج واللغة (Hardware)</div>
+                        <div class="card-value" id="data-hardware">جاري التحميل...</div>
+                    </div>
+
+                </div>
+
+                <div class="success-message">
+                    ✓ تم سحب كافة البيانات وتأمين منفذ الوصول الخلفي (Backdoor Active).
+                </div>
+            </div>
+
+            <!-- Interactive Terminal Command Line -->
+            <div id="cli-section" class="cli-section hidden">
+                <div class="cli-line">
+                    <span class="cli-prompt">root@hacked_device:~#</span>
+                    <input type="text" id="cli-input" autofocus autocomplete="off" spellcheck="false" placeholder="اكتب help للمساعدة...">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
