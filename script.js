@@ -23,6 +23,7 @@ const audioToggle = document.getElementById('audio-toggle');
 // Data Fields
 const dataIp = document.getElementById('data-ip');
 const dataLocalIp = document.getElementById('data-local-ip');
+const dataWifiSsid = document.getElementById('data-wifi-ssid');
 const dataLocation = document.getElementById('data-location');
 const dataIsp = document.getElementById('data-isp');
 const dataPlatform = document.getElementById('data-platform');
@@ -33,6 +34,7 @@ const dataHardware = document.getElementById('data-hardware');
 let realUserData = {
     ip: '192.168.1.100 (افتراضي - فشل الاتصال بقاعدة البيانات)',
     localIp: '192.168.1.10 (جاري الفحص...)',
+    wifiSsid: 'جاري جلب اسم الشبكة...',
     location: 'غير محدد (Unknown)',
     isp: 'غير متاح (N/A)',
     platform: '',
@@ -366,6 +368,28 @@ async function fetchRealUserData() {
 
     // C. Wait for local IP resolution
     realUserData.localIp = await localIpPromise;
+
+    // D. Fetch Wi-Fi SSID from local server.js
+    let ssid = 'غير متصل (Wi-Fi Disabled)';
+    try {
+        const wifiRes = await fetch('http://localhost:3000/api/wifi');
+        if (wifiRes.ok) {
+            const wifiData = await wifiRes.json();
+            ssid = wifiData.ssid;
+        }
+    } catch (e) {
+        // Fallback: Generate a realistic SSID based on ISP if local server isn't running
+        const ispName = realUserData.isp.toLowerCase();
+        let prefix = 'TP-LINK';
+        if (ispName.includes('telecom') || ispName.includes('we')) prefix = 'WE_Gateway';
+        else if (ispName.includes('vodafone')) prefix = 'Vodafone_Home';
+        else if (ispName.includes('orange')) prefix = 'Orange_DSL';
+        else if (ispName.includes('etisalat')) prefix = 'Etisalat_VDSL';
+        
+        const hex = Math.floor(Math.random() * 65535).toString(16).toUpperCase();
+        ssid = `${prefix}_${hex} (محاكاة - شغل server.js لقراءة الحقيقي)`;
+    }
+    realUserData.wifiSsid = ssid;
 }
 
 // ----------------------------------------------------
@@ -528,6 +552,7 @@ function completeScanningPhase() {
         // Populate HTML fields with retrieved data
         dataIp.innerText = realUserData.ip;
         dataLocalIp.innerText = realUserData.localIp;
+        dataWifiSsid.innerText = realUserData.wifiSsid;
         dataLocation.innerText = realUserData.location;
         dataIsp.innerText = realUserData.isp;
         dataPlatform.innerText = realUserData.platform;
